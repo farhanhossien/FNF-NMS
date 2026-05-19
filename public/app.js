@@ -25,13 +25,13 @@ function initChart() {
     
     // Gradient for Upload (Purple)
     const gradientPurple = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientPurple.addColorStop(0, 'rgba(139, 92, 246, 0.5)');
-    gradientPurple.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+    gradientPurple.addColorStop(0, 'rgba(157, 78, 221, 0.25)');
+    gradientPurple.addColorStop(1, 'rgba(157, 78, 221, 0.0)');
 
-    // Gradient for Download (Blue)
-    const gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-    gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+    // Gradient for Download (Cyan)
+    const gradientCyan = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientCyan.addColorStop(0, 'rgba(0, 212, 255, 0.25)');
+    gradientCyan.addColorStop(1, 'rgba(0, 212, 255, 0.0)');
 
     usageChart = new Chart(ctx, {
         type: 'line',
@@ -41,18 +41,24 @@ function initChart() {
                 {
                     label: 'Download',
                     data: [0, 0, 0, 0, 0, 0, 0],
-                    borderColor: '#3B82F6',
-                    backgroundColor: gradientBlue,
+                    borderColor: '#00d4ff',
+                    backgroundColor: gradientCyan,
                     borderWidth: 2,
+                    pointBackgroundColor: '#00d4ff',
+                    pointBorderColor: 'rgba(255,255,255,0.8)',
+                    pointHoverRadius: 6,
                     fill: true,
                     tension: 0.4
                 },
                 {
                     label: 'Upload',
                     data: [0, 0, 0, 0, 0, 0, 0],
-                    borderColor: '#8B5CF6',
+                    borderColor: '#9d4edd',
                     backgroundColor: gradientPurple,
                     borderWidth: 2,
+                    pointBackgroundColor: '#9d4edd',
+                    pointBorderColor: 'rgba(255,255,255,0.8)',
+                    pointHoverRadius: 6,
                     fill: true,
                     tension: 0.4
                 }
@@ -64,16 +70,38 @@ function initChart() {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#374151' },
-                    ticks: { color: '#9CA3AF' }
+                    grid: { color: 'rgba(0, 212, 255, 0.05)' },
+                    ticks: { 
+                        color: '#64748b',
+                        font: {
+                            family: 'JetBrains Mono',
+                            size: 10
+                        }
+                    }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#9CA3AF' }
+                    ticks: { 
+                        color: '#64748b',
+                        font: {
+                            family: 'Rajdhani',
+                            size: 12,
+                            weight: '600'
+                        }
+                    }
                 }
             },
             plugins: {
-                legend: { labels: { color: '#F3F4F6' } }
+                legend: { 
+                    labels: { 
+                        color: '#f1f5f9',
+                        font: {
+                            family: 'Rajdhani',
+                            size: 13,
+                            weight: '600'
+                        }
+                    } 
+                }
             }
         }
     });
