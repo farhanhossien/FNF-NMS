@@ -3,11 +3,14 @@ const MikroTikService = require('./services/mikrotik');
 const OltService = require('./services/olt');
 const TelegramService = require('./services/telegram');
 const DashboardServer = require('./server');
+const TrafficLogger = require('./services/traffic_logger');
+const cron = require('node-cron');
 
 const mikrotikService = new MikroTikService(env.mikrotik);
 const oltService = new OltService(env.olt);
 const telegram = new TelegramService(env.telegram);
 const dashboard = new DashboardServer(env.server);
+const trafficLogger = new TrafficLogger(mikrotikService);
 
 const POLLING_INTERVAL = 5000; // 5 seconds
 const state = {
@@ -112,6 +115,14 @@ async function main() {
         console.log('Telegram is not configured. Alerts will only be logged locally.');
     }
     
+    // Schedule Traffic Logger to run every minute (for testing/demo) 
+    // In production, this would be '0 * * * *' (every hour)
+    cron.schedule('* * * * *', async () => {
+        if (mikrotikService.session) {
+            await trafficLogger.logTraffic();
+        }
+    });
+
     pollingLoop();
 }
 

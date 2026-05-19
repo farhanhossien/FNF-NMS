@@ -104,6 +104,37 @@ class MikroTikService {
     }
 
     /**
+     * Fetches simple queues for user bandwidth tracking
+     */
+    async getSimpleQueues() {
+        if (!this.api) {
+            throw new Error('Not connected to MikroTik router. Call connect() first.');
+        }
+
+        try {
+            const rawData = await this.api.write('/queue/simple/print');
+            return rawData.map(q => {
+                const [txBytes, rxBytes] = (q.bytes || '0/0').split('/').map(n => parseInt(n, 10));
+                const [txRate, rxRate] = (q.rate || '0/0').split('/').map(n => parseInt(n, 10));
+                
+                return {
+                    id: q['.id'],
+                    name: q.name,
+                    target: q.target,
+                    rxBytes: rxBytes || 0,
+                    txBytes: txBytes || 0,
+                    rxBps: rxRate || 0,
+                    txBps: txRate || 0,
+                    disabled: q.disabled === 'true'
+                };
+            });
+        } catch (error) {
+            console.error('Error fetching simple queues:', error.message || error);
+            throw error;
+        }
+    }
+
+    /**
      * Closes the connection to the MikroTik router cleanly.
      */
     async disconnect() {

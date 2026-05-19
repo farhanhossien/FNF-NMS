@@ -3,79 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FNF NMS Dashboard</title>
+    <title>NMS v1.0 | Network Monitoring System</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <header class="header">
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
             <div class="logo">
-                <span class="pulse-dot"></span>
-                <h1>FNF Network Monitor</h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <div>
+                    <h1>NMS <span>v1.0</span></h1>
+                    <p>Network Monitoring System</p>
+                </div>
             </div>
-            <div class="status-indicator">
-                <span id="connection-status">Connecting...</span>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="view-dashboard">Dashboard</a>
+                <a href="#" class="nav-item" data-target="view-corerouter">Core Router</a>
+                <a href="#" class="nav-item" data-target="view-olt">OLT Monitoring</a>
+                <a href="#" class="nav-item" data-target="view-reseller">Reseller Panel</a>
+                <a href="#" class="nav-item">Alerts</a>
+                <a href="#" class="nav-item">Reports</a>
+            </nav>
+
+            <div class="system-status">
+                <div class="status-header">
+                    <span>System Status</span>
+                    <span class="badge badge-success">Online</span>
+                </div>
+                <div class="status-row">
+                    <span>Uptime</span>
+                    <span id="uptime-val">--</span>
+                </div>
+                <div class="status-row">
+                    <span>Last Update</span>
+                    <span id="update-val">Just now</span>
+                </div>
             </div>
-        </header>
+        </aside>
 
-        <main class="dashboard-grid">
-            <!-- MikroTik Core Health -->
-            <section class="card glass">
-                <h2>Core Router Health</h2>
-                <div class="metrics-grid">
-                    <div class="metric">
-                        <span class="label">CPU Load</span>
-                        <span class="value" id="cpu-load">--%</span>
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="breadcrumbs">
+                    <h2>Dashboard</h2>
+                    <p>Home / Dashboard</p>
+                </div>
+                <div class="user-profile">
+                    <div class="bell-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span class="notification-dot">3</span>
                     </div>
-                    <div class="metric">
-                        <span class="label">Memory Free</span>
-                        <span class="value" id="mem-free">-- MB</span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Uptime</span>
-                        <span class="value" id="uptime">--</span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Status</span>
-                        <span class="value status-good" id="core-status">Unknown</span>
+                    <div class="avatar-box">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=10B981&color=fff&rounded=true&bold=true" alt="Admin">
+                        <div class="avatar-info">
+                            <span class="avatar-name">Admin User</span>
+                            <span class="avatar-role">Super Admin</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </header>
 
-            <!-- MikroTik Traffic -->
-            <section class="card glass">
-                <h2>Core Traffic</h2>
-                <div class="traffic-visual">
-                    <div class="bandwidth-block rx">
-                        <span class="label">Download (RX)</span>
-                        <span class="value" id="rx-speed">-- Mbps</span>
-                    </div>
-                    <div class="bandwidth-block tx">
-                        <span class="label">Upload (TX)</span>
-                        <span class="value" id="tx-speed">-- Mbps</span>
+            <div id="view-dashboard" class="view-section">
+                <!-- Stats Row -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon-circle bg-blue">👥</div>
+                    <div class="stat-info">
+                        <span class="label">Total Resellers</span>
+                        <h3 id="stat-resellers">1</h3>
+                        <span class="trend success">Active: 1</span>
                     </div>
                 </div>
-            </section>
+                <div class="stat-card">
+                    <div class="icon-circle bg-purple">👨‍💻</div>
+                    <div class="stat-info">
+                        <span class="label">Total Clients</span>
+                        <h3 id="stat-clients">0</h3>
+                        <span class="trend success">Online: 0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-circle bg-green">📥</div>
+                    <div class="stat-info">
+                        <span class="label">Total Bandwidth</span>
+                        <h3 id="stat-allocated">0 Gbps</h3>
+                        <span class="trend text-muted">Allocated</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-circle bg-yellow">📈</div>
+                    <div class="stat-info">
+                        <span class="label">Total Usage</span>
+                        <h3 id="stat-usage">0 Gbps</h3>
+                        <span class="trend text-muted">Currently Used</span>
+                    </div>
+                </div>
+            </div>
 
-            <!-- OLT Fiber Status -->
-            <section class="card glass full-width">
-                <h2>Fiber OLT Monitoring</h2>
-                <div class="olt-summary">
-                    <div class="metric">
-                        <span class="label">Total ONUs</span>
-                        <span class="value" id="total-onus">--</span>
+            <!-- Middle Row (Reseller List & Chart) -->
+            <div class="middle-grid">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Reseller List</h3>
+                        <input type="text" placeholder="Search reseller..." class="search-input">
                     </div>
-                    <div class="metric">
-                        <span class="label">Warnings</span>
-                        <span class="value warning-text" id="warning-onus">0</span>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Reseller Name</th>
+                                <th>Clients</th>
+                                <th>Bandwidth (Alloc.)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reseller-list-body">
+                            <tr>
+                                <td>1</td>
+                                <td>Default Reseller</td>
+                                <td id="tbl-clients">0</td>
+                                <td id="tbl-alloc">0</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Bandwidth Usage (Last 7 Days)</h3>
+                        <select class="dropdown">
+                            <option>All Clients</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="usageChart"></canvas>
                     </div>
                 </div>
-                <div class="onu-list" id="onu-list">
-                    <!-- ONU items will be injected here -->
-                    <div class="empty-state">Waiting for OLT data...</div>
+            </div>
+
+            <!-- Bottom Row (Client List) -->
+            <div class="panel full-width">
+                <div class="panel-header">
+                    <h3>Clients Overview</h3>
+                    <div class="actions">
+                        <input type="text" placeholder="Search client..." class="search-input">
+                        <button class="btn btn-primary">Export</button>
+                    </div>
                 </div>
-            </section>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Username / Target</th>
+                            <th>Plan</th>
+                            <th>Current Usage (Rx/Tx)</th>
+                            <th>Link Status</th>
+                            <th>ONU Signal (Rx/Tx)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="client-list-body">
+                        <!-- Populated by JS -->
+                        <tr><td colspan="6" style="text-align: center;">Loading clients...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            </div> <!-- End view-dashboard -->
+
+            <div id="view-corerouter" class="view-section" style="display:none;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Core Router (MikroTik) Status</h3>
+                    </div>
+                    <div style="padding: 24px; color: var(--text-muted);">
+                        <p>Detailed MikroTik interfaces, queues, and firewall rules will be displayed here.</p>
+                        <br>
+                        <div class="status-row"><span>CPU Load:</span> <span id="cr-cpu">--</span></div>
+                        <div class="status-row"><span>Free Memory:</span> <span id="cr-mem">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-olt" class="view-section" style="display:none;">
+                <div class="panel full-width">
+                    <div class="panel-header">
+                        <h3>Fiber OLT Monitoring</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ONU ID</th>
+                                <th>Status</th>
+                                <th>Distance</th>
+                                <th>Rx Power</th>
+                                <th>Tx Power</th>
+                            </tr>
+                        </thead>
+                        <tbody id="olt-list-body">
+                            <tr><td colspan="5" style="text-align: center;">Waiting for OLT data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-reseller" class="view-section" style="display:none;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Reseller Management</h3>
+                    </div>
+                    <div style="padding: 24px; color: var(--text-muted);">
+                        <p>Reseller billing, packages, and custom limits will be managed here.</p>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
