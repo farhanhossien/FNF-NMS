@@ -15,7 +15,8 @@ const telegram = new TelegramService(env.telegram);
 const dashboard = new DashboardServer(env.server);
 const trafficLogger = new TrafficLogger(mikrotikService);
 
-const POLLING_INTERVAL = 5000; // 5 seconds
+const MIKROTIK_POLLING_INTERVAL = 5000; // 5 seconds for real-time router bandwidth
+const OLT_POLLING_INTERVAL = 600000;   // 10 minutes for OLT optical signals (standard ISP monitoring)
 const state = {
     mikrotikDown: false,
     oltDown: false,
@@ -141,12 +142,15 @@ async function checkOlt() {
     }
 }
 
-async function pollingLoop() {
-    console.log(`\n[${new Date().toISOString()}] Polling devices...`);
+async function mikrotikPollingLoop() {
     await checkMikroTik();
+    setTimeout(mikrotikPollingLoop, MIKROTIK_POLLING_INTERVAL);
+}
+
+async function oltPollingLoop() {
+    console.log(`\n[${new Date().toISOString()}] Polling OLT optical database...`);
     await checkOlt();
-    
-    setTimeout(pollingLoop, POLLING_INTERVAL);
+    setTimeout(oltPollingLoop, OLT_POLLING_INTERVAL);
 }
 
 async function main() {
@@ -171,7 +175,8 @@ async function main() {
         }
     });
 
-    pollingLoop();
+    mikrotikPollingLoop();
+    oltPollingLoop();
 }
 
 // Handle graceful shutdown
