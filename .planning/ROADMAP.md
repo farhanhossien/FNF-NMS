@@ -47,6 +47,6 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Router Setup | 0/1 | Not started | - |
-| 2. Fiber Monitoring Integration | 0/TBD | Not started | - |
+| 1. Core Router Setup | 1/1 | Complete | 2026-05-19 |
+| 2. Fiber Monitoring Integration | 0/TBD | In progress | - |
 | 3. Dashboard & Alerts | 0/TBD | Not started | - |
