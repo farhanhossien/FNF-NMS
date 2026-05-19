@@ -6,9 +6,9 @@
 ## v1 Requirements
 
 ### Core Network Monitoring
-- [ ] **CORE-01**: Connect to MikroTik routers via API/SNMP.
-- [ ] **CORE-02**: Fetch live bandwidth traffic for the MikroTik core router.
-- [ ] **CORE-03**: Monitor MikroTik Core Router health metrics (CPU, Memory, Uptime).
+- [x] **CORE-01**: Connect to MikroTik routers via API/SNMP.
+- [x] **CORE-02**: Fetch live bandwidth traffic for the MikroTik core router.
+- [x] **CORE-03**: Monitor MikroTik Core Router health metrics (CPU, Memory, Uptime).
 
 ### Fiber Monitoring
 - [ ] **FIBR-01**: Connect to OLT via SNMP.
@@ -33,9 +33,9 @@
 ## Traceability
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | Phase 1 | Pending |
-| CORE-02 | Phase 1 | Pending |
-| CORE-03 | Phase 1 | Pending |
+| CORE-01 | Phase 1 | Complete |
+| CORE-02 | Phase 1 | Complete |
+| CORE-03 | Phase 1 | Complete |
 | FIBR-01 | Phase 2 | Pending |
 | FIBR-02 | Phase 2 | Pending |
 | FIBR-03 | Phase 2 | Pending |
