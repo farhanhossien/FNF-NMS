@@ -131,17 +131,22 @@ async function fetchStats() {
 let globalUsers = [];
 let globalOltData = {};
 
-async function renderClientTable() {
+async function renderClientTable(searchTerm = '') {
     try {
         const res = await fetch('/api/users');
         globalUsers = await res.json();
         
-        if (globalUsers.length === 0) {
+        const filtered = globalUsers.filter(u => 
+            u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            u.target.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (filtered.length === 0) {
             els.clientList.innerHTML = '<tr><td colspan="6" style="text-align: center;">No clients found</td></tr>';
             return;
         }
 
-        els.clientList.innerHTML = globalUsers.map((u, i) => {
+        els.clientList.innerHTML = filtered.map((u, i) => {
             // Fake the plan for UI purposes
             const plan = '20 Mbps'; 
             
@@ -176,8 +181,8 @@ async function renderClientTable() {
         }).join('');
         
         // Fetch chart for first user as demo
-        if (globalUsers.length > 0) {
-            fetchUserHistory(globalUsers[0].id);
+        if (filtered.length > 0) {
+            fetchUserHistory(filtered[0].id);
         }
         
     } catch (e) {
@@ -369,6 +374,14 @@ document.addEventListener('DOMContentLoaded', () => {
     renderClientTable();
     setupNavigation();
     fetchDevices();
+
+    // Client search binding
+    const searchInput = document.getElementById('client-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            renderClientTable(e.target.value);
+        });
+    }
 
     // Form handlers
     if (els.formMikrotik) {
