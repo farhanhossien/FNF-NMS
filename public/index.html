@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNF NMS Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <span class="pulse-dot"></span>
+                <h1>FNF Network Monitor</h1>
+            </div>
+            <div class="status-indicator">
+                <span id="connection-status">Connecting...</span>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <!-- MikroTik Core Health -->
+            <section class="card glass">
+                <h2>Core Router Health</h2>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="label">CPU Load</span>
+                        <span class="value" id="cpu-load">--%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Memory Free</span>
+                        <span class="value" id="mem-free">-- MB</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Uptime</span>
+                        <span class="value" id="uptime">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Status</span>
+                        <span class="value status-good" id="core-status">Unknown</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MikroTik Traffic -->
+            <section class="card glass">
+                <h2>Core Traffic</h2>
+                <div class="traffic-visual">
+                    <div class="bandwidth-block rx">
+                        <span class="label">Download (RX)</span>
+                        <span class="value" id="rx-speed">-- Mbps</span>
+                    </div>
+                    <div class="bandwidth-block tx">
+                        <span class="label">Upload (TX)</span>
+                        <span class="value" id="tx-speed">-- Mbps</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OLT Fiber Status -->
+            <section class="card glass full-width">
+                <h2>Fiber OLT Monitoring</h2>
+                <div class="olt-summary">
+                    <div class="metric">
+                        <span class="label">Total ONUs</span>
+                        <span class="value" id="total-onus">--</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Warnings</span>
+                        <span class="value warning-text" id="warning-onus">0</span>
+                    </div>
+                </div>
+                <div class="onu-list" id="onu-list">
+                    <!-- ONU items will be injected here -->
+                    <div class="empty-state">Waiting for OLT data...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

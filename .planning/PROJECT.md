@@ -12,16 +12,16 @@ Proactive network fault detection—enabling the FNF support team to identify an
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Connect to MikroTik routers via API/SNMP to fetch live bandwidth traffic.
+- [x] Monitor MikroTik Core Router health metrics.
+- [x] Monitor ONU/ONT optical power signals.
+- [x] Implement automated Telegram alert system.
+- [x] Create a unified real-time dashboard.
 
 ### Active
 
-- [ ] Connect to MikroTik routers via API/SNMP to fetch live bandwidth traffic.
-- [ ] Monitor MikroTik Core Router, Switches, and OLT health metrics (CPU, Memory, Temperature).
-- [ ] Monitor ONU/ONT optical power signals (Rx/Tx) continuously via OLT SNMP.
-- [ ] Implement an automated alert system (e.g., Telegram) for when devices go offline or optical power drops below critical levels (e.g., -27dBm).
-- [ ] Create a unified real-time dashboard displaying overall network health and traffic.
-- [ ] Detect and alert on rogue ONUs that are causing packet loss or dropping PON ports.
+(None - V1 completed)
+
 
 ### Out of Scope
 
@@ -43,10 +43,14 @@ Proactive network fault detection—enabling the FNF support team to identify an
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Develop both MikroTik & OLT monitoring concurrently | The user determined both aspects are equally critical to their day-to-day operations. | — Pending |
-| Exclude billing/CRM features | Existing software already handles this, keeping the NMS focused and lightweight. | — Pending |
+| Develop both MikroTik & OLT monitoring concurrently | The user determined both aspects are equally critical to their day-to-day operations. | Validated in v1.0 |
+| Exclude billing/CRM features | Existing software already handles this, keeping the NMS focused and lightweight. | Validated in v1.0 |
 
-## Evolution
+## Current State
+**v1.0 (Shipped 2026-05-19):** Core router integration, fiber OLT optical monitoring, realtime glassmorphism dashboard, and Telegram alerting successfully deployed.
+
+## Next Milestone Goals
+**v2.0 (Planned):** Visual Network Topology Map and Weekly Summary Reports.
 
 This document evolves at phase transitions and milestone boundaries.
 
