@@ -14,7 +14,11 @@ const els = {
     crMem: document.getElementById('cr-mem'),
     oltList: document.getElementById('olt-list-body'),
     breadcrumbsTitle: document.querySelector('.breadcrumbs h2'),
-    breadcrumbsPath: document.querySelector('.breadcrumbs p')
+    breadcrumbsPath: document.querySelector('.breadcrumbs p'),
+    formMikrotik: document.getElementById('form-add-mikrotik'),
+    formOlt: document.getElementById('form-add-olt'),
+    mtDeviceList: document.getElementById('mt-device-list'),
+    oltDeviceList: document.getElementById('olt-device-list')
 };
 
 let usageChart;
@@ -249,6 +253,86 @@ socket.on('olt_data', (data) => {
     }
 });
 
+// Fetch and render devices
+async function fetchDevices() {
+    try {
+        const res = await fetch('/api/devices');
+        const devices = await res.json();
+
+        const mikrotiks = devices.filter(d => d.type === 'mikrotik');
+        const olts = devices.filter(d => d.type === 'olt');
+
+        // Render MikroTiks
+        if (mikrotiks.length === 0) {
+            if(els.mtDeviceList) els.mtDeviceList.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No configured routers</td></tr>';
+        } else {
+            if(els.mtDeviceList) els.mtDeviceList.innerHTML = mikrotiks.map(d => {
+                const badge = d.active ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning">Inactive</span>';
+                return `
+                    <tr>
+                        <td><strong>${d.name}</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">${d.host}</span></td>
+                        <td>${badge}</td>
+                        <td>
+                            <div style="display:flex; gap:8px;">
+                                ${!d.active ? `<button class="btn btn-primary" style="padding: 2px 8px; font-size:0.7rem;" onclick="activateDevice(${d.id})">Activate</button>` : ''}
+                                <button class="btn btn-primary" style="padding: 2px 8px; font-size:0.7rem; background:transparent; border-color:var(--accent-red); color:var(--accent-red);" onclick="deleteDevice(${d.id})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render OLTs
+        if (olts.length === 0) {
+            if(els.oltDeviceList) els.oltDeviceList.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No configured OLTs</td></tr>';
+        } else {
+            if(els.oltDeviceList) els.oltDeviceList.innerHTML = olts.map(d => {
+                const badge = d.active ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-warning">Inactive</span>';
+                return `
+                    <tr>
+                        <td><strong>${d.name}</strong><br><span style="font-size:0.75rem;color:var(--text-muted)">${d.host}</span></td>
+                        <td>${badge}</td>
+                        <td>
+                            <div style="display:flex; gap:8px;">
+                                ${!d.active ? `<button class="btn btn-primary" style="padding: 2px 8px; font-size:0.7rem;" onclick="activateDevice(${d.id})">Activate</button>` : ''}
+                                <button class="btn btn-primary" style="padding: 2px 8px; font-size:0.7rem; background:transparent; border-color:var(--accent-red); color:var(--accent-red);" onclick="deleteDevice(${d.id})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('Failed to fetch devices:', e);
+    }
+}
+
+async function activateDevice(id) {
+    try {
+        await fetch(`/api/devices/${id}/active`, { method: 'POST' });
+        fetchDevices();
+        renderClientTable();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function deleteDevice(id) {
+    if (confirm('Are you sure you want to delete this device?')) {
+        try {
+            await fetch(`/api/devices/${id}`, { method: 'DELETE' });
+            fetchDevices();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+
+// Bind to window for onclick handlers
+window.activateDevice = activateDevice;
+window.deleteDevice = deleteDevice;
+
 // Tab Navigation Logic
 function setupNavigation() {
     els.navItems.forEach(item => {
@@ -284,4 +368,54 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchStats();
     renderClientTable();
     setupNavigation();
+    fetchDevices();
+
+    // Form handlers
+    if (els.formMikrotik) {
+        els.formMikrotik.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('mt-name').value;
+            const host = document.getElementById('mt-host').value;
+            const port = parseInt(document.getElementById('mt-port').value) || 8728;
+            const username = document.getElementById('mt-user').value;
+            const password = document.getElementById('mt-pass').value;
+
+            try {
+                const res = await fetch('/api/devices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'mikrotik', name, host, port, username, password })
+                });
+                if (res.ok) {
+                    els.formMikrotik.reset();
+                    fetchDevices();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    }
+
+    if (els.formOlt) {
+        els.formOlt.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('olt-name').value;
+            const host = document.getElementById('olt-host').value;
+            const community = document.getElementById('olt-community').value || 'public';
+
+            try {
+                const res = await fetch('/api/devices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'olt', name, host, community })
+                });
+                if (res.ok) {
+                    els.formOlt.reset();
+                    fetchDevices();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    }
 });

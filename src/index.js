@@ -6,6 +6,9 @@ const DashboardServer = require('./server');
 const TrafficLogger = require('./services/traffic_logger');
 const cron = require('node-cron');
 
+const { getDb } = require('./services/db');
+const db = getDb();
+
 const mikrotikService = new MikroTikService(env.mikrotik);
 const oltService = new OltService(env.olt);
 const telegram = new TelegramService(env.telegram);
@@ -19,10 +22,45 @@ const state = {
     downOnus: new Set()
 };
 
+async function getActiveConfig(type) {
+    try {
+        const active = db.prepare('SELECT * FROM devices WHERE type = ? AND active = 1').get(type);
+        if (active) {
+            if (type === 'mikrotik') {
+                return {
+                    host: active.host,
+                    port: active.port || 8728,
+                    user: active.username,
+                    password: active.password,
+                    defaultInterface: env.mikrotik.defaultInterface || 'ether1'
+                };
+            } else if (type === 'olt') {
+                return {
+                    host: active.host,
+                    community: active.community || 'public'
+                };
+            }
+        }
+    } catch (e) {
+        // Table might not exist yet
+    }
+    return null;
+}
+
 async function checkMikroTik() {
     try {
+        const activeConfig = await getActiveConfig('mikrotik') || env.mikrotik;
+        
+        if (JSON.stringify(mikrotikService.config) !== JSON.stringify(activeConfig)) {
+            console.log(`[MikroTik] Switching active config to ${activeConfig.host}`);
+            await mikrotikService.disconnect();
+            mikrotikService.config = activeConfig;
+            mikrotikService.session = null;
+        }
+
         if (!mikrotikService.session) {
             await mikrotikService.connect();
+            mikrotikService.session = true;
         }
         
         const resources = await mikrotikService.getSystemResources();
@@ -30,7 +68,7 @@ async function checkMikroTik() {
         
         if (state.mikrotikDown) {
             state.mikrotikDown = false;
-            await telegram.sendRecovery(`Core Router (${env.mikrotik.host}) is back online.`);
+            await telegram.sendRecovery(`Core Router (${mikrotikService.config.host}) is back online.`);
         }
         
         dashboard.broadcast('mikrotik_data', { resources, traffic });
@@ -41,13 +79,23 @@ async function checkMikroTik() {
         
         if (!state.mikrotikDown) {
             state.mikrotikDown = true;
-            await telegram.sendAlert(`Core Router (${env.mikrotik.host}) is OFFLINE or unreachable!`);
+            await telegram.sendAlert(`Core Router (${mikrotikService.config.host}) is OFFLINE or unreachable!`);
         }
     }
 }
 
 async function checkOlt() {
     try {
+        const activeConfig = await getActiveConfig('olt') || env.olt;
+
+        if (oltService.host !== activeConfig.host || oltService.community !== activeConfig.community) {
+            console.log(`[OLT] Switching active config to ${activeConfig.host}`);
+            await oltService.disconnect();
+            oltService.host = activeConfig.host;
+            oltService.community = activeConfig.community;
+            oltService.session = null;
+        }
+
         if (!oltService.session) {
             await oltService.connect();
         }

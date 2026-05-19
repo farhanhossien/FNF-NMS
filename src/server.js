@@ -56,6 +56,46 @@ class DashboardServer {
             `).all(userId);
             res.json(history);
         });
+
+        // Device Manager APIs
+        this.app.get('/api/devices', (req, res) => {
+            const devices = db.prepare('SELECT * FROM devices').all();
+            res.json(devices);
+        });
+
+        this.app.post('/api/devices', (req, res) => {
+            const { type, name, host, port, username, password, community } = req.body;
+            if (!type || !name || !host) {
+                return res.status(400).json({ error: 'Missing type, name or host' });
+            }
+            const stmt = db.prepare(`
+                INSERT INTO devices (type, name, host, port, username, password, community)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `);
+            const info = stmt.run(type, name, host, port || null, username || null, password || null, community || null);
+            res.json({ id: info.lastInsertRowid, type, name, host });
+        });
+
+        this.app.post('/api/devices/:id/active', (req, res) => {
+            const { id } = req.params;
+            const device = db.prepare('SELECT * FROM devices WHERE id = ?').get(id);
+            if (!device) {
+                return res.status(404).json({ error: 'Device not found' });
+            }
+            
+            // Set all of same type to active = 0
+            db.prepare('UPDATE devices SET active = 0 WHERE type = ?').run(device.type);
+            // Set current one to active = 1
+            db.prepare('UPDATE devices SET active = 1 WHERE id = ?').run(id);
+            
+            res.json({ success: true, active: id });
+        });
+
+        this.app.delete('/api/devices/:id', (req, res) => {
+            const { id } = req.params;
+            db.prepare('DELETE FROM devices WHERE id = ?').run(id);
+            res.json({ success: true });
+        });
     }
 
     setupSocket() {

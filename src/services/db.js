@@ -29,6 +29,18 @@ function initDb() {
             tx_bytes INTEGER,
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
+
+        CREATE TABLE IF NOT EXISTS devices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            type TEXT NOT NULL,
+            name TEXT NOT NULL,
+            host TEXT NOT NULL,
+            port INTEGER,
+            username TEXT,
+            password TEXT,
+            community TEXT,
+            active INTEGER DEFAULT 0
+        );
     `);
 
     return db;

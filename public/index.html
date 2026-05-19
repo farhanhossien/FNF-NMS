@@ -193,38 +193,105 @@
             </div> <!-- End view-dashboard -->
 
             <div id="view-corerouter" class="view-section" style="display:none;">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h3>Core Router (MikroTik) Status</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; margin-bottom: 24px;">
+                    <!-- Add form & list -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Add Core Router</h3>
+                        </div>
+                        <form id="form-add-mikrotik" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                            <input type="text" id="mt-name" placeholder="Router Name (e.g. Core-1)" class="search-input" required>
+                            <input type="text" id="mt-host" placeholder="IP Address (e.g. 192.168.88.1)" class="search-input" required>
+                            <input type="number" id="mt-port" placeholder="API Port (default: 8728)" class="search-input" value="8728">
+                            <input type="text" id="mt-user" placeholder="Username" class="search-input" required>
+                            <input type="password" id="mt-pass" placeholder="Password" class="search-input" required>
+                            <button type="submit" class="btn btn-primary" style="align-self: flex-start;">Save Router</button>
+                        </form>
+                        <div class="panel-header" style="border-top: 1px solid var(--border);">
+                            <h3>Configured Routers</h3>
+                        </div>
+                        <div style="padding: 20px; max-height: 250px; overflow-y: auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name / Host</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mt-device-list">
+                                    <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No configured routers</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div style="padding: 24px; color: var(--text-muted);">
-                        <p>Detailed MikroTik interfaces, queues, and firewall rules will be displayed here.</p>
-                        <br>
-                        <div class="status-row"><span>CPU Load:</span> <span id="cr-cpu">--</span></div>
-                        <div class="status-row"><span>Free Memory:</span> <span id="cr-mem">--</span></div>
+
+                    <!-- Status details -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Router Operational Status</h3>
+                        </div>
+                        <div style="padding: 24px;">
+                            <p style="color: var(--text-muted); margin-bottom: 16px;">Real-time resource stats for the active Core Router:</p>
+                            <div class="status-row"><span>CPU Load:</span> <span id="cr-cpu">--</span></div>
+                            <div class="status-row"><span>Free Memory:</span> <span id="cr-mem">--</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="view-olt" class="view-section" style="display:none;">
-                <div class="panel full-width">
-                    <div class="panel-header">
-                        <h3>Fiber OLT Monitoring</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; margin-bottom: 24px;">
+                    <!-- Add form & list -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Add OLT Device</h3>
+                        </div>
+                        <form id="form-add-olt" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+                            <input type="text" id="olt-name" placeholder="OLT Name (e.g. PON-OLT-1)" class="search-input" required>
+                            <input type="text" id="olt-host" placeholder="IP Address" class="search-input" required>
+                            <input type="text" id="olt-community" placeholder="SNMP Community (default: public)" class="search-input" value="public">
+                            <button type="submit" class="btn btn-primary" style="align-self: flex-start;">Save OLT</button>
+                        </form>
+                        <div class="panel-header" style="border-top: 1px solid var(--border);">
+                            <h3>Configured OLTs</h3>
+                        </div>
+                        <div style="padding: 20px; max-height: 250px; overflow-y: auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name / Host</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="olt-device-list">
+                                    <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No configured OLTs</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ONU ID</th>
-                                <th>Status</th>
-                                <th>Distance</th>
-                                <th>Rx Power</th>
-                                <th>Tx Power</th>
-                            </tr>
-                        </thead>
-                        <tbody id="olt-list-body">
-                            <tr><td colspan="5" style="text-align: center;">Waiting for OLT data...</td></tr>
-                        </tbody>
-                    </table>
+
+                    <!-- Signal details -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Fiber OLT Monitoring</h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ONU ID</th>
+                                    <th>Status</th>
+                                    <th>Distance</th>
+                                    <th>Rx Power</th>
+                                    <th>Tx Power</th>
+                                </tr>
+                            </thead>
+                            <tbody id="olt-list-body">
+                                <tr><td colspan="5" style="text-align: center;">Waiting for OLT data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
